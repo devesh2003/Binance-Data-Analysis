@@ -3,7 +3,7 @@ import numpy as np
 
 class HyperBacktest:
     def __init__(self,target,sl,calculator,df,max_time=1*24*60,long=True,short=True
-                ,fees=0.1):
+                ,fees=0.1,leverage=1):
         self.target = target/100
         self.sl = sl/100
         self.calculator = calculator
@@ -12,6 +12,7 @@ class HyperBacktest:
         self.fees = fees
         self.long = long
         self.short = short
+        self.leverage = leverage
 
     def run(self):
         if self.long:
@@ -27,7 +28,7 @@ class HyperBacktest:
             sl_price = self.df["Close"][i] * (1+self.sl)
             from_time = self.df["Open Time"][i]
             to_time = min(self.df["Open Time"][i] + pd.Timedelta(minutes=self.max_time),self.df["Open Time"][len(self.df) - 1])
-            self.df["Returns"][i] = self.calculator.calculate(from_time,to_time,target_price,sl_price) - self.fees # Fees
+            self.df["Returns"][i] = self.calculator.calculate(from_time,to_time,target_price,sl_price) * self.leverage - self.fees # Fees
             if self.df["Returns"][i] > 0:
                 wins += 1
             else:
@@ -41,7 +42,7 @@ class HyperBacktest:
             sl_price = self.df["Close"][i] * (1-self.sl)
             from_time = self.df["Open Time"][i]
             to_time = min(self.df["Open Time"][i] + pd.Timedelta(minutes=self.max_time),self.df["Open Time"][len(self.df) - 1])
-            self.df["Returns"][i] = self.calculator.calculate(from_time,to_time,target_price,sl_price,trade="short") - self.fees # Fees
+            self.df["Returns"][i] = self.calculator.calculate(from_time,to_time,target_price,sl_price,trade="short") * self.leverage - self.fees # Fees
             if self.df["Returns"][i] > 0:
                 wins += 1
             else:

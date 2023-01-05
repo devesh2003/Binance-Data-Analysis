@@ -37,27 +37,27 @@ class BinanceSync:
     "28.46694368",      // Taker buy quote asset volume
     "17928899.62484339" // Ignore.
     '''
-    def get_candlestick(self,start,end):
+    def get_candlestick(self,start):
         url = f"https://fapi.binance.com/fapi/v1/klines?symbol={self.symbol}&interval={self.interval}&limit=1&starttime={int(start)}"
         r = requests.get(url,verify=False)
         data = r.json()
         df = {
-            "Open Time": datetime.fromtimestamp(data[0][0]/1000),
+            "Open Time": datetime.utcfromtimestamp(data[0][0]/1000),
             "Open": float(data[0][1]),
             "High": float(data[0][2]),
             "Low": float(data[0][3]),
             "Close": float(data[0][4]),
             "Volume": float(data[0][5]),
-            "Close Time": datetime.fromtimestamp(data[0][6]/1000),
+            "Close Time": datetime.utcfromtimestamp(data[0][6]/1000),
             "Quote Asset Volume": float(data[0][7]),
             "Number of Trades": int(data[0][8]),
             "Taker Buy Base Asset Volume": float(data[0][9]),
             "Taker Buy Quote Asset Volume": float(data[0][10]),
             "Ignore": float(data[0][11])
         }
-        print(url)
-        print(r.text)
-        print("-----------------------")
+        # print(url)
+        # print(r.text)
+        # print("-----------------------")
         return pd.DataFrame(df,index=[0])
 
     def get_current_time(self):
@@ -73,17 +73,27 @@ class BinanceSync:
 
         # Already synced
         if cur_time < last_time:
-            return self.df
+            return
         
         sync_start = last_time.timestamp()*1000
         sync_end = cur_time.timestamp()*1000
         sync_date = last_time
 
-        while sync_start < sync_end:
-            df = self.get_candlestick(sync_start,sync_end)
+        while (sync_start + 15*60*100) <= sync_end:
+            df = self.get_candlestick(sync_start)
+            if df.iloc[0]["Close Time"] >= datetime.utcfromtimestamp(cur_time.timestamp()):
+                print("Stopping")
+                print(f"Last candle: {df.iloc[0]['Close Time']}\nCurrent Time: {cur_time}")
+                return
             self.df = self.df.append(df,ignore_index=True)
             sync_date += timedelta(minutes=15)
             sync_start = sync_date.timestamp()*1000
+            # sync_start += 15*60*1000
+        
+        print("Stopping")
+        print(f"Start: {sync_start}\n Stop: {sync_end}")
+        print(f"Last candle: {df.iloc[0]['Close Time']}\nCurrent Time: {cur_time}")
+        print(f"Dataframe End: {last_time}")
         
         
 
