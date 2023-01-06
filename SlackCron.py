@@ -4,8 +4,6 @@ curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"
 https://hooks.slack.com/services/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
 '''
 
-url = "https://hooks.slack.com/services/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"
-
 data = {
     "Time":  "2021-04-01 00:00:00",
     "Close Price": "1231",
@@ -15,8 +13,14 @@ data = {
     "Stop Loss": "3131"
 }
 
-message = ""
-for key in data:
-    message += f"{key}: {data[key]}\n"
-
-r = requests.post(url, json={"text":message},verify=False)
+class SlackCron:
+    def __init__(self):
+        self.url = "https://hooks.slack.com/services/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"
+        self.data = {}
+        self.message = ""
+    
+    def send(self,data):
+        self.data = data
+        for key in self.data:
+            self.message += f"{key}: {self.data[key]}\n"
+        r = requests.post(self.url, json={"text":self.message},verify=False)
