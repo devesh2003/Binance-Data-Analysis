@@ -13,6 +13,7 @@ class HyperBacktest:
         self.long = long
         self.short = short
         self.leverage = leverage
+        self.df["End"] = 0
 
     def run(self):
         if self.long:
@@ -28,7 +29,13 @@ class HyperBacktest:
             sl_price = self.df["Close"][i] * (1+self.sl)
             from_time = self.df["Open Time"][i]
             to_time = min(self.df["Open Time"][i] + pd.Timedelta(minutes=self.max_time),self.df["Open Time"][len(self.df) - 1])
+            print(f"From: {from_time} \nTo: {to_time}")
+            print("------------------")
             self.df["Returns"][i] = self.calculator.calculate(from_time,to_time,target_price,sl_price) * self.leverage - self.fees # Fees
+            # print(self.calculator.end)
+            self.df["End"][i] = self.calculator.end
+            if type(self.calculator.end) != pd.Timestamp:
+                self.tmp = self.calculator.df_main
             if self.df["Returns"][i] > 0:
                 wins += 1
             else:
@@ -43,6 +50,10 @@ class HyperBacktest:
             from_time = self.df["Open Time"][i]
             to_time = min(self.df["Open Time"][i] + pd.Timedelta(minutes=self.max_time),self.df["Open Time"][len(self.df) - 1])
             self.df["Returns"][i] = self.calculator.calculate(from_time,to_time,target_price,sl_price,trade="short") * self.leverage - self.fees # Fees
+            # print(self.calculator.end)
+            self.df["End"][i] = self.calculator.end
+            if type(self.calculator.end) != pd.Timestamp:
+                self.tmp = self.calculator.df_main
             if self.df["Returns"][i] > 0:
                 wins += 1
             else:
