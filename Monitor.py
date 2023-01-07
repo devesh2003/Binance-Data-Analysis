@@ -57,14 +57,14 @@ while True:
         print(f"Buy Signal at {df.iloc[-1]['Close Time']}")
         data['Signal'] = "Buy"
         data["Close Price"] = df.iloc[-1]["Close"]
-        data["Target"] = df.iloc[-1]["Close Price"] + target*df.iloc[-1]["Close Price"]
-        data["Stop Loss"] = df.iloc[-1]["Close Price"] - sl*df.iloc[-1]["Close Price"]
+        data["Target"] = df.iloc[-1]["Close"] + target*df.iloc[-1]["Close"]
+        data["Stop Loss"] = df.iloc[-1]["Close"] - sl*df.iloc[-1]["Close"]
         cron.send(data)
     if df.iloc[-1]["Sell"] == 1:
         print(f"Sell Signal at {df.iloc[-1]['Close Time']}")
         data['Signal'] = "Sell"
         data["Close Price"] = df.iloc[-1]["Close"]
-        data["Target"] = df.iloc[-1]["Close Price"] - target*df.iloc[-1]["Close Price"]
-        data["Stop Loss"] = df.iloc[-1]["Close Price"] + sl*df.iloc[-1]["Close Price"]
+        data["Target"] = df.iloc[-1]["Close"] - target*df.iloc[-1]["Close"]
+        data["Stop Loss"] = df.iloc[-1]["Close"] + sl*df.iloc[-1]["Close"]
         cron.send(data)
     done = True

@@ -2,6 +2,19 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
+'''
+Allows robust strategies to b implemented using Buy and Sell flags, another
+module can be  used to modify and implement strategies by simple setting
+Buy and Sell flags.
+
+This module reads Buy and Sell flags, target, sl and calculator(BreaakdownCalculator object)
+and returns a dataframe with all the trades,returns and gap between trades. This module also
+provides an option to control and test returns with parameters like fees,leverage and max
+holding time.
+
+Author: Devesh Shah
+'''
+
 class HyperBacktest:
     def __init__(self,target,sl,calculator,df,max_time=1*24*60,long=True,short=True
                 ,fees=0.1,leverage=1,simultaneous_trades=2):
