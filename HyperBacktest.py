@@ -51,6 +51,8 @@ class HyperBacktest:
         wins = 0
         losses = 0
         for i in np.where( (self.df["Buy"] == 1) )[0]:
+            if i == -1:
+                continue
             target_price = self.df["Close"][i] * (1+self.target)
             sl_price = self.df["Close"][i] * (1+self.sl)
             from_time = self.df["Open Time"][i]
@@ -71,6 +73,8 @@ class HyperBacktest:
         wins = 0 
         losses = 0
         for i in np.where( (self.df["Sell"] == 1) )[0]:
+            if i == -1:
+                continue
             target_price = self.df["Close"][i] * (1-self.target)
             sl_price = self.df["Close"][i] * (1-self.sl)
             from_time = self.df["Open Time"][i]
