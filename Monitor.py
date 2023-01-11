@@ -10,10 +10,16 @@ from HyperBacktest import HyperBacktest
 import matplotlib.pyplot as plt
 from datetime import datetime,timedelta
 from SlackCron import SlackCron
+from TradeBook import TradeBook
+import sys
 
 start = (datetime.now() - timedelta(days=60)).strftime("%Y-%m-%d")
 end = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 symbol = "ETHUSDT"
+
+if len(sys.argv) != 1:
+    symbol = sys.argv[1]
+
 interval = "15m"
 
 collector = BinanceCollector(symbol,start,end,interval)
@@ -31,9 +37,12 @@ max_positions = 2
 positions = []
 pnl = 0
 
+book = TradeBook(symbol,"15m","Monitor")
+
 cron = SlackCron()
 
 def main():
+    global df,active_positions,positions,pnl,max_positions,target,sl
     done = False
     while True:
         # Change according to interval
@@ -56,7 +65,7 @@ def main():
         print(positions)
         time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = {
-            'symbol': "------\n" + symbol,
+            '--------\nsymbol': symbol,
             'time':time
         }
 
@@ -83,6 +92,11 @@ def main():
             
             # Remove position if closed
             if result != 0:
+                active_positions -= 1
+                book.add(i["time"],i["Close Price"],df.iloc[-1]["Close"],df.iloc[-1]["Close Time"],result)
+                # Send results 
+                i["Result"] = str(result) + "\n--------\n"
+                cron.send(i) 
                 positions.remove(i)
             
             pnl += result

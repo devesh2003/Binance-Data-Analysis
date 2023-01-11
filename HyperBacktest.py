@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime,timedelta
 
 '''
 Allows robust strategies to b implemented using Buy and Sell flags, another
@@ -41,8 +41,10 @@ class HyperBacktest:
         # for i in range(self.simultaneous_trades):
         #     self.df["Gap"][i] = 0
 
+        self.master_df = self.df.copy()
         self.df = self.df[ self.df["Returns"] != 0 ]
-        self.df["Gap"] = (self.df["Open Time"] - self.df["End"].shift(self.simultaneous_trades).fillna(datetime.now())).apply(lambda x: x.total_seconds()/60)
+        # print(self.df[["Open Time","End"]].head(20))
+        self.df["Gap"] = (self.df["Open Time"] - self.df["End"].shift(self.simultaneous_trades).fillna(datetime.now() - timedelta(days=3650))).apply(lambda x: x.total_seconds()/60)
         print(f"Before Drop: {len(self.df)}")
         self.df = self.df.drop( self.df[ self.df["Gap"] < 0 ].index )
         print(f"After Drop: {len(self.df)}")
