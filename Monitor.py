@@ -80,20 +80,20 @@ def main():
                     result = target
                 elif i["Stop Loss"] >= df.iloc[-1]["Close"]:
                     result = -sl
-                elif i["Square Off Time"] >= df.iloc[-1]["Close Time"]:
+                elif i["Square Off Time"] <= df.iloc[-1]["Close Time"]:
                     result = ( df.iloc[-1]["Close"] - i["Close Price"] )*100 / i["Close Price"]
             elif i["Signal"] == "Sell":
                 if i["Target"] >= df.iloc[-1]["Close"]:
                     result = target
                 elif i["Stop Loss"] <= df.iloc[-1]["Close"]:
                     result = -sl
-                elif i["Square Off Time"] >= df.iloc[-1]["Close Time"]:
+                elif i["Square Off Time"] <= df.iloc[-1]["Close Time"]:
                     result = ( df.iloc[-1]["Close"] - i["Close Price"] )*100 / i["Close Price"]
             
             # Remove position if closed
             if result != 0:
                 active_positions -= 1
-                book.add(i["time"],i["Close Price"],df.iloc[-1]["Close"],df.iloc[-1]["Close Time"],result)
+                book.add_entry([i["time"],i["Close Price"],df.iloc[-1]["Close"],df.iloc[-1]["Close Time"],result])
                 # Send results 
                 i["Result"] = str(result) + "\n--------\n"
                 cron.send(i) 
