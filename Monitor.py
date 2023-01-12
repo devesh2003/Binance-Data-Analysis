@@ -94,10 +94,11 @@ def main():
             if result != 0:
                 active_positions -= 1
                 book.add_entry([i["time"],i["Close Price"],df.iloc[-1]["Close"],df.iloc[-1]["Close Time"],result])
-                # Send results 
-                i["Result"] = str(result) + "\n--------\n"
-                cron.send(i) 
                 positions.remove(i)
+                # Send results 
+                i["Result"] = result
+                cron.send(i)
+                cron.send({"Message": "Succesfully Squared off and updated\n--------\n"}) 
             
             pnl += result
 
@@ -131,3 +132,4 @@ if __name__ == '__main__':
         data = {}
         data["Error"] = str(e)
         cron.send(data)
+        print(e)
