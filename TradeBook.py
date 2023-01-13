@@ -20,6 +20,7 @@ class TradeBook:
             f.write("Entry Time,Entry,Exit,Exit Time,Result,"+",".join(custom_fields)+"\n")
 
     def add_entry(self,data):
+        data = [str(i) for i in data]
         with open(os.path.join(".",self.symbol,self.name),"a") as f:
             f.write( ",".join(data)+"\n" )
         
