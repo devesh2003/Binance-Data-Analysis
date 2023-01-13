@@ -131,8 +131,9 @@ if __name__ == '__main__':
         main()
     except Exception as e:
         data = {}
+        exc_type, exc_obj, exc_tb = sys.exc_info()
         data["Error"] = str(e)
         data["Verbose"] = str(traceback.format_exc())
         cron.send(data)
-        print(traceback.format_exc())
         print(e)
+    # main()
