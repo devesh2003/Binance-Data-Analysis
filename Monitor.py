@@ -66,7 +66,7 @@ def main():
         print(positions)
         time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         data = {
-            '--------\nsymbol': symbol,
+            'symbol': symbol,
             'time':time
         }
 
@@ -99,7 +99,7 @@ def main():
                 # Send results 
                 i["Result"] = result
                 cron.send(i)
-                cron.send({"Message": "Succesfully Squared off and updated\n--------\n"}) 
+                cron.send({"Message": "Succesfully Squared off and updated"}) 
             
             pnl += result
 

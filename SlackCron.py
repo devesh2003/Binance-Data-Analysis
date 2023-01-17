@@ -17,10 +17,11 @@ class SlackCron:
     def __init__(self):
         self.url = "https://hooks.slack.com/services/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"
         self.data = {}
-        self.message = ""
+        self.message = "--------\n"
     
     def send(self,data):
         self.data = data
         for key in self.data:
             self.message += f"{key}: {self.data[key]}\n"
+        self.message += "--------\n"
         r = requests.post(self.url, json={"text":self.message},verify=False)
