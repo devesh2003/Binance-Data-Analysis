@@ -13,6 +13,7 @@ from SlackCron import SlackCron
 from TradeBook import TradeBook
 import sys
 import traceback
+from FuturesModule import FuturesModule
 
 start = (datetime.now() - timedelta(days=60)).strftime("%Y-%m-%d")
 end = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
@@ -44,6 +45,11 @@ cron = SlackCron()
 
 def main():
     global df,active_positions,positions,pnl,max_positions,target,sl
+    leverage = 1
+    client = FuturesModule(symbol=symbol,leverage=leverage)
+    # USDT
+    position_size = 7
+
     done = False
     while True:
         # Change according to interval
@@ -112,6 +118,8 @@ def main():
             # Add a new position
             if active_positions < max_positions:
                 active_positions += 1
+                client.limit_long(position_size/df.iloc[-1]["Close"],df.iloc[-1]["Close"],
+                                    data["Target"],data["Stop Loss"])
                 positions.append(data)
             cron.send(data)
         if df.iloc[-1]["Sell"] == 1:
@@ -122,6 +130,8 @@ def main():
             data["Stop Loss"] = df.iloc[-1]["Close"] + sl*df.iloc[-1]["Close"]/100
             if active_positions < max_positions:
                 active_positions += 1
+                client.limit_short(position_size/df.iloc[-1]["Close"],df.iloc[-1]["Close"],
+                                    data["Target"],data["Stop Loss"])
                 positions.append(data)
             cron.send(data)
         done = True
