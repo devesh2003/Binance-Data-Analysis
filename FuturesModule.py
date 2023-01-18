@@ -16,6 +16,9 @@ class FuturesModule:
             pass
     
     def limit_long(self,quantity,price,stop_loss=0,take_profit=0):
+        quantity = float("{:.2f}".format(quantity))
+        stop_loss = float("{:.2f}".format(stop_loss))
+        take_profit = float("{:.2f}".format(take_profit))
         self.order = self.client.futures_create_order(symbol=self.symbol,side="BUY",type="LIMIT",quantity=quantity,price=price,timeInForce="GTC")
         self.tp = self.client.futures_create_order(symbol=self.symbol,side="SELL",type="TAKE_PROFIT_MARKET",quantity=quantity,stopPrice=take_profit,timeInForce="GTC",
                                                     closePosition=True)
@@ -23,6 +26,9 @@ class FuturesModule:
                                                     closePosition=True)
     
     def limit_short(self,quantity,price,stop_loss=0,take_profit=0):
+        quantity = float("{:.2f}".format(quantity))
+        stop_loss = float("{:.2f}".format(stop_loss))
+        take_profit = float("{:.2f}".format(take_profit))
         self.order = self.client.futures_create_order(symbol=self.symbol,side="SELL",type="LIMIT",quantity=quantity,price=price,timeInForce="GTC")
         self.tp = self.client.futures_create_order(symbol=self.symbol,side="BUY",type="TAKE_PROFIT_MARKET",quantity=quantity,stopPrice=take_profit,timeInForce="GTC",
                                                     closePosition=True)
@@ -30,7 +36,9 @@ class FuturesModule:
                                                     closePosition=True)
 
     def market_long(self,quantity):
+        quantity = float("{:.2f}".format(quantity))
         self.order = self.client.futures_create_order(symbol=self.symbol,side="BUY",type="MARKET",quantity=quantity)
 
     def market_short(self,quantity):
+        quantity = float("{:.2f}".format(quantity))
         self.order = self.client.futures_create_order(symbol=self.symbol,side="SELL",type="MARKET",quantity=quantity)
