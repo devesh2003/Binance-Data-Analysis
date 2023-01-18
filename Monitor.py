@@ -118,7 +118,7 @@ def main():
             # Add a new position
             if active_positions < max_positions:
                 active_positions += 1
-                client.limit_long(position_size/df.iloc[-1]["Close"],df.iloc[-1]["Close"],
+                client.limit_long(float("{:.2f}".format(position_size/df.iloc[-1]["Close"])),df.iloc[-1]["Close"],
                                     data["Target"],data["Stop Loss"])
                 positions.append(data)
             cron.send(data)
@@ -130,7 +130,7 @@ def main():
             data["Stop Loss"] = df.iloc[-1]["Close"] + sl*df.iloc[-1]["Close"]/100
             if active_positions < max_positions:
                 active_positions += 1
-                client.limit_short(position_size/df.iloc[-1]["Close"],df.iloc[-1]["Close"],
+                client.limit_short(float("{:.2f}".format(position_size/df.iloc[-1]["Close"])),df.iloc[-1]["Close"],
                                     data["Target"],data["Stop Loss"])
                 positions.append(data)
             cron.send(data)
