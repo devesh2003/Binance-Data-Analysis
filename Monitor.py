@@ -18,9 +18,13 @@ from FuturesModule import FuturesModule
 start = (datetime.now() - timedelta(days=60)).strftime("%Y-%m-%d")
 end = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
 symbol = "ETHUSDT"
+live = False
 
 if len(sys.argv) != 1:
     symbol = sys.argv[1]
+
+if len(sys.argv) == 3:
+    live = str(sys.argv[2]) == "True"
 
 interval = "15m"
 
@@ -118,7 +122,8 @@ def main():
             # Add a new position
             if active_positions < max_positions:
                 active_positions += 1
-                client.limit_long(position_size/df.iloc[-1]["Close"],df.iloc[-1]["Close"],
+                if live:
+                    client.limit_long(position_size/df.iloc[-1]["Close"],df.iloc[-1]["Close"],
                                     data["Target"],data["Stop Loss"])
                 positions.append(data)
             cron.send(data)
@@ -130,7 +135,8 @@ def main():
             data["Stop Loss"] = df.iloc[-1]["Close"] + sl*df.iloc[-1]["Close"]/100
             if active_positions < max_positions:
                 active_positions += 1
-                client.limit_short(position_size/df.iloc[-1]["Close"],df.iloc[-1]["Close"],
+                if live:
+                    client.limit_short(position_size/df.iloc[-1]["Close"],df.iloc[-1]["Close"],
                                     data["Target"],data["Stop Loss"])
                 positions.append(data)
             cron.send(data)
